@@ -1,4 +1,3 @@
-#!/dados/Renato/ParaView/5.6.0/bin/pvbatch
 # trace generated using paraview version 5.6.0
 #
 # To ensure correct image size when batch processing, please search 
@@ -7,12 +6,16 @@
 #### import the simple module from the paraview
 from paraview.simple import *
 import sys
+import numpy as np
 
 #### disable automatic camera reset on 'Show'
 paraview.simple._DisableFirstRenderCameraReset()
 print sys.argv[1],'->',sys.argv[2]
 
-directorScale=float(sys.argv[3])
+DirectorScale=float(sys.argv[3])
+FractionOfPoints=float(sys.argv[4])
+
+
 # create a new 'CSV Reader'
 
 cutycsv =  CSVReader(FileName=[sys.argv[1]])
@@ -22,6 +25,7 @@ tableToPoints1 = TableToPoints(Input=cutycsv)
 tableToPoints1.XColumn = 'x'
 tableToPoints1.YColumn = 'y'
 tableToPoints1.ZColumn = 'z'
+
 
 # Properties modified on tableToPoints1
 
@@ -34,6 +38,7 @@ renderView1 = GetActiveViewOrCreate('RenderView')
 materialLibrary1 = GetMaterialLibrary()
 
 # update the view to ensure updated data information
+
 renderView1.Update()
 
 # create a new 'Calculator'
@@ -41,14 +46,19 @@ calculator1 = Calculator(Input=tableToPoints1)
 calculator1.ResultArrayName = 'n'
 calculator1.Function = 'nx*iHat+ny*jHat+nz*kHat'
 
+
+NumberOfPoints= calculator1.PointData.GetArray("nx").GetNumberOfTuples()
+
 # create a new 'Glyph'
 glyph1 = Glyph(Input=calculator1,
     GlyphType='Cylinder')
 glyph1.OrientationArray = ['POINTS', 'n']
 glyph1.ScaleArray = ['POINTS', 'No scale array']
-glyph1.ScaleFactor = directorScale
+glyph1.ScaleFactor = DirectorScale
 glyph1.GlyphTransform = 'Transform2'
-glyph1.GlyphMode = 'All Points'
+glyph1.GlyphMode = 'Uniform Spatial Distribution'
+glyph1.MaximumNumberOfSamplePoints = int(NumberOfPoints*FractionOfPoints)
+glyph1.Seed = 12121
 
 # Properties modified on glyph1.GlyphType
 glyph1.GlyphType.Radius = 0.2
@@ -121,19 +131,39 @@ sPWF = GetOpacityTransferFunction('S')
 sPWF.Points = [0.53286, 0.0, 0.5, 0.0, 0.5329820513725281, 1.0, 0.5, 0.0]
 sPWF.ScalarRangeInitialized = 1
 
+
+Xmin,Xmax,Ymin,Ymax,Zmin,Zmax =calculator1.GetDataInformation().GetBounds()
+
+deltaX=Xmax-Xmin
+deltaY=Ymax-Ymin
+deltaZ=Zmax-Zmin
+deltaM=max(deltaX,deltaY,deltaZ)
+
+print deltaX,deltaY,deltaZ, deltaM
+
+Xavg=(Xmax+Xmin)/2
+Yavg=(Ymax+Ymin)/2
+Zavg=(Zmax+Zmin)/2
+
+
+
 renderView1.OrientationAxesVisibility = 0
 glyph1Display.RescaleTransferFunctionToDataRange(True, True)
 # current camera placement for renderView1
+
 renderView1.InteractionMode = '2D'
-renderView1.CameraPosition = [100*50, 50, 50]
-renderView1.CameraFocalPoint = [50,50,50]
+renderView1.CameraPosition = [Xavg+deltaM*0.5,Yavg,Zavg]
+renderView1.CameraFocalPoint = [Xavg,Yavg,Zavg]
 renderView1.CameraViewUp = [0.0, 0.0, 1.0]
-renderView1.CameraParallelScale = 0.9
+renderView1.CameraParallelScale = 1.0
 renderView1.ResetCamera()
 
-renderView1.Background = [.7, .7, .7]
+renderView1.Background = [.65, .65, .65]
 # save screenshot
-SaveScreenshot(sys.argv[2], renderView1, ImageResolution=[1300, 1000],
+
+ImageRessX=2000
+ImageRessY=int(ImageRessX*deltaZ/deltaY)
+SaveScreenshot(sys.argv[2], renderView1, ImageResolution=[ImageRessX, ImageRessY],
     FontScaling='Do not scale fonts')
 
 #### uncomment the following to render all views

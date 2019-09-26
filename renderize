@@ -10,6 +10,13 @@ Midle=$((Size/2))
 
 LocalAddress=$(pwd)
 
+if [ ${Stride} -eq 0 ]
+then
+
+    Stride=1
+
+fi
+
 
 
 for ii in $(seq ${Start} ${FigStride} ${End})
