@@ -1,0 +1,8 @@
+#!/bin/bash
+
+awk 'BEGIN{RS="[ \n]";FS="."};\
+   NF>2  {modString=$0;\
+     for(ii=1;ii<NF-1;ii++) modString=gensub(/\./, "_", 1 , modString);\
+     print ("mv",$0,modString) | "bash ";\
+
+     close("bash ")}' <(echo $@)

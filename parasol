@@ -1,0 +1,25 @@
+#!/bin/bash
+
+Start=${1}
+FigStride=${2:-1}
+End=${3:-${1}}
+directorSize=${4:-"1e-8"}
+
+LocalAddress=$(pwd)
+
+for ii in $(seq ${Start} ${FigStride} ${End})
+do
+
+    comsol_to_marlics <x_plane_ii_${ii}.csv >x_plane_${ii}.csv
+    parasol_x.py x_plane_${ii}.csv x_plane_${ii}.png ${4}
+    rm x_plane_${ii}.csv
+
+    comsol_to_marlics <y_plane_ii_${ii}.csv >y_plane_${ii}.csv
+    parasol_y.py y_plane_${ii}.csv y_plane_${ii}.png ${4}
+    rm y_plane_${ii}.csv
+
+    comsol_to_marlics <z_plane_ii_${ii}.csv >z_plane_${ii}.csv
+    parasol_z.py z_plane_${ii}.csv z_plane_${ii}.png ${4}
+    rm z_plane_${ii}.csv
+
+done

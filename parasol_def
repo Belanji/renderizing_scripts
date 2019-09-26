@@ -1,0 +1,19 @@
+#!/bin/bash
+
+Start=${1}
+FigStride=${2:-1}
+End=${3:-${1}}
+
+
+LocalAddress=$(pwd)
+
+for ii in $(seq ${Start} ${FigStride} ${End})
+do
+
+
+    vtsolextractor time_ii_${ii}.mph
+    vtsol2vtlics time_ii_${ii}.vtu time_ii_${ii}.vtu
+    parasol_S.py time_ii_${ii}.vtu time_ii_${ii}.png
+    rm time_ii_${ii}.vtu
+
+done

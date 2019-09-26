@@ -1,0 +1,29 @@
+#!/bin/bash
+
+Start=${1}
+FigStride=${2}
+End=${3}
+Size=${4:-300}
+
+Stride=$((Size/100))
+
+LocalAddress=$(pwd)
+ServerAddress="."${LocalAddress#*sgi}
+
+
+for ii in $(seq ${Start} ${FigStride} ${End})
+do
+
+
+    ssh sgi "cd ${ServerAddress};  cut_them_ginzo ${ii} ${ii} ${Size} ${Stride}"
+    
+    renderize_droplet_x.py ${Size} ${Stride} x_plane_${ii}.csv
+    rm x_plane_${ii}.csv
+                 
+    renderize_droplet_y.py ${Size} ${Stride} y_plane_${ii}.csv
+    rm y_plane_${ii}.csv
+     
+    renderize_droplet_z.py ${Size} ${Stride} z_plane_${ii}.csv
+    rm z_plane_${ii}.csv
+    
+done

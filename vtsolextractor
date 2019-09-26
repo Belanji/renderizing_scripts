@@ -1,0 +1,53 @@
+#!/bin/bash
+
+installDirr=/dados/codes/FemQsol/framework/vtsolextractor
+currentDirr=$(pwd)
+
+if [ ${#} -lt 1 ]
+then
+
+    echo "vtsolextractor usage:"
+    echo "vtsolextractor <file to extract>"
+    exit
+
+fi
+
+echo "start_file \"${1}\"" >temp_start_file.txt
+
+
+comsol batch -inputfile ${installDirr}/vtsolextractor.class -outputfile ./SnapshotExtractor.mph
+
+if [ -a temp_start_file.txt ]
+then
+
+    rm temp_start_file.txt
+
+fi
+
+if [ -a ./SnapshotExtractor.mph ]
+then
+    
+    rm SnapshotExtractor.mph
+
+fi
+
+if [ -a ./SnapshotExtractor_tempModel.mph ]
+then
+    
+    rm SnapshotExtractor_tempModel.mph
+
+fi
+
+if [ -a SnapshotExtractor_Model.mph ]
+then
+    
+    rm SnapshotExtractor_Model.mph
+
+fi
+
+if [ -a SnapshotExtractor.mph.status ]
+then
+    
+    rm SnapshotExtractor.mph.status
+
+fi

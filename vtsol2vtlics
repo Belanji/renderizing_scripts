@@ -1,0 +1,131 @@
+#!/usr/bin/python
+
+import numpy as np
+import sys
+import vtk
+from numpy import linalg as LA
+
+def print_usage():
+
+    print("Welcome to vtsol2vtlics v1.1 - Hope never dies")
+    print("This program reads an .vtu file containing a grid of Qij liquid crystal order parameters")
+    print("and convert it to a .vtu containing the S,P and n order parameters.")
+    print("\nUsage:\n")
+    print("vtsol2vtlics <input_file>  <output_file_name>\n")
+    exit(0)
+
+def get_order_parameters(data):
+
+
+
+    Qij=data.GetAttributes(0)
+    Q00=Qij.GetArray(0)
+    Q01=Qij.GetArray(1)
+    Q02=Qij.GetArray(2)
+    Q11=Qij.GetArray(3)
+    Q12=Qij.GetArray(4)
+
+    
+    ArraySize=Q00.GetSize()
+    S_order=np.zeros(ArraySize)
+    P_order=np.zeros(ArraySize)
+    n_order=np.zeros([ArraySize,3])
+    l_order=np.zeros([ArraySize,3])
+
+    Qij=np.zeros([3,3])
+    
+    for ii in range(0,ArraySize):
+
+        
+        Qij[0,0]=Q00.GetTuple(ii)[0]
+        Qij[0,1]=Q01.GetTuple(ii)[0]
+        Qij[0,2]=Q02.GetTuple(ii)[0]
+
+        Qij[1,0]=Q01.GetTuple(ii)[0]
+        Qij[1,1]=Q11.GetTuple(ii)[0]
+        Qij[1,2]=Q12.GetTuple(ii)[0]
+
+        Qij[2,0]=Q02.GetTuple(ii)[0]
+        Qij[2,1]=Q12.GetTuple(ii)[0]
+        Qij[2,2]=-Q00.GetTuple(ii)[0]-Q11.GetTuple(ii)[0]
+
+
+        eigVal,eigVec=LA.eig(Qij)
+
+        MaxIndex=eigVal.argmax()
+        MinIndex=eigVal.argmin()
+
+        S_order[ii]=eigVal[MaxIndex]
+        P_order[ii]=2*eigVal[MinIndex]+eigVal[MaxIndex]
+
+        n_order[ii,:]=eigVec[MaxIndex,:]
+        l_order[ii,:]=eigVec[MinIndex,:]
+        
+        
+    return S_order, P_order, n_order, l_order
+
+
+if len( sys.argv ) < 3:
+
+   print_usage()
+
+
+input_file_name=sys.argv[1]
+output_file_name=sys.argv[2]
+
+
+
+
+
+reader = vtk.vtkXMLUnstructuredGridReader()
+reader.SetFileName(input_file_name)
+reader.Update() 
+rawData = reader.GetOutput()
+
+
+S_order, P_order, n_order, l_order=get_order_parameters(rawData)
+
+
+marlics_file = vtk.vtkUnstructuredGrid()
+marlics_file.CopyStructure(rawData)
+
+
+vtk_S=vtk.vtkDoubleArray()
+vtk_S.SetName("S")
+vtk_S.SetNumberOfValues(S_order.size)
+
+vtk_P=vtk.vtkDoubleArray()
+vtk_P.SetName("P")
+vtk_P.SetNumberOfValues(S_order.size)
+
+vtk_N=vtk.vtkDoubleArray()
+vtk_N.SetName("n")
+vtk_N.SetNumberOfComponents(3)
+vtk_N.SetNumberOfTuples(S_order.size)
+
+
+for ii in range(0,S_order.size):
+
+    vtk_S.SetTuple1(ii,S_order[ii])
+    vtk_P.SetTuple1(ii,P_order[ii])
+    vtk_N.SetTuple3(ii,n_order[ii,0],n_order[ii,1],n_order[ii,2])
+
+    
+marlics_file.GetAttributes(0).AddArray(vtk_S)
+marlics_file.GetAttributes(0).AddArray(vtk_P)
+marlics_file.GetAttributes(0).AddArray(vtk_N)
+
+writer = vtk.vtkXMLUnstructuredGridWriter()
+writer.SetFileName(output_file_name)
+writer.SetInputData(marlics_file)
+writer.SetDataModeToBinary()
+writer.Write()
+
+
+
+
+
+
+    
+    
+    
