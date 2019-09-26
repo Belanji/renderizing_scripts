@@ -138,8 +138,9 @@ Xavg=(Xmax+Xmin)/2
 Yavg=(Ymax+Ymin)/2
 Zavg=(Zmax+Zmin)/2
 
+AspectRatio=deltaZ/deltaY
 
-renderView1.OrientationAxesVisibility = 0
+renderView1.OrientationAxesVisibility = 1
 glyph1Display.RescaleTransferFunctionToDataRange(True, True)
 # current camera placement for renderView1
 
@@ -149,14 +150,14 @@ renderView1.CameraPosition = [Xavg+deltaM/10.,Yavg,Zavg]
 renderView1.CameraFocalPoint = [Xavg,Yavg,Zavg]
 renderView1.CameraViewUp = [0.0, 0.0, 1.0]
 renderView1.CameraParallelProjection = 1
-renderView1.CameraParallelScale = deltaM/3.9
+renderView1.CameraParallelScale = AspectRatio*deltaM/1.95
 
 
 renderView1.Background = [.65, .65, .65]
 # save screenshot
 
 ImageRessX=4000
-ImageRessY=int(ImageRessX*deltaZ/deltaY)
+ImageRessY=int(ImageRessX*AspectRatio)
 SaveScreenshot(sys.argv[2], renderView1, ImageResolution=[ImageRessX, ImageRessY],
     FontScaling='Do not scale fonts')
 
