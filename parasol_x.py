@@ -103,14 +103,9 @@ glyph1Display.PolarAxes.PolarAxisLabelFontFile = ''
 glyph1Display.PolarAxes.LastRadialAxisTextFontFile = ''
 glyph1Display.PolarAxes.SecondaryRadialAxesTextFontFile = ''
 
-# reset view to fit data
-renderView1.ResetCamera()
 
 # update the view to ensure updated data information
 renderView1.Update()
-
-# reset view to fit data
-renderView1.ResetCamera()
 
 # set scalar coloring
 ColorBy(glyph1Display, ('POINTS', 'S'))
@@ -139,29 +134,28 @@ deltaY=Ymax-Ymin
 deltaZ=Zmax-Zmin
 deltaM=max(deltaX,deltaY,deltaZ)
 
-print deltaX,deltaY,deltaZ, deltaM
-
 Xavg=(Xmax+Xmin)/2
 Yavg=(Ymax+Ymin)/2
 Zavg=(Zmax+Zmin)/2
-
 
 
 renderView1.OrientationAxesVisibility = 0
 glyph1Display.RescaleTransferFunctionToDataRange(True, True)
 # current camera placement for renderView1
 
+renderView1.ResetCamera()
 renderView1.InteractionMode = '2D'
-renderView1.CameraPosition = [Xavg+deltaM*0.5,Yavg,Zavg]
+renderView1.CameraPosition = [Xavg+deltaM/10.,Yavg,Zavg]
 renderView1.CameraFocalPoint = [Xavg,Yavg,Zavg]
 renderView1.CameraViewUp = [0.0, 0.0, 1.0]
-renderView1.CameraParallelScale = 1.0
-renderView1.ResetCamera()
+renderView1.CameraParallelProjection = 1
+renderView1.CameraParallelScale = deltaM/3.9
+
 
 renderView1.Background = [.65, .65, .65]
 # save screenshot
 
-ImageRessX=2000
+ImageRessX=4000
 ImageRessY=int(ImageRessX*deltaZ/deltaY)
 SaveScreenshot(sys.argv[2], renderView1, ImageResolution=[ImageRessX, ImageRessY],
     FontScaling='Do not scale fonts')
