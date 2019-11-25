@@ -1,5 +1,3 @@
-#!/dados/Renato/ParaView/5.6.0/bin/pvbatch
-
 # trace generated using paraview version 5.6.0
 #
 # To ensure correct image size when batch processing, please search 

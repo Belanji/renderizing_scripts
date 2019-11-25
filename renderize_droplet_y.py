@@ -1,5 +1,3 @@
-#!/dados/Renato/ParaView/5.6.0/bin/pvbatch
-
 # trace generated using paraview version 5.6.0
 #
 # To ensure correct image size when batch processing, please search 
@@ -37,6 +35,9 @@ layout1 = GetLayout()
 ## update the view to ensure updated data information
 spreadSheetView1.Update()
 
+
+
+
 # create a new 'Table To Structured Grid'
 tableToStructuredGrid1 = TableToStructuredGrid(Input=director_field_0csv)
 ## Properties modified on tableToStructuredGrid1
@@ -45,7 +46,7 @@ tableToStructuredGrid1.XColumn = 'x'
 tableToStructuredGrid1.YColumn = 'y'
 tableToStructuredGrid1.ZColumn = 'z'
 #
-#
+
 ## update the view to ensure updated data information
 spreadSheetView1.Update()
 
@@ -55,14 +56,16 @@ slice1.SliceType = 'Plane'
 slice1.SliceOffsetValues = [0.0]
 
 ## init the 'Plane' selected for 'SliceType
-slice1.SliceType.Origin = [dropletSize/(dimensionReduction*2), dropletSize/(dimensionReduction*2), dropletSize/2]
+slice1.SliceType.Origin = [dropletSize/(dimensionReduction*2), dropletSize/2,dropletSize/(dimensionReduction*2)]
 slice1.SliceType.Normal = [0.0, 1.0, 0.0]
 slice1.SliceType.Offset = 0.0
 
 
 ## update the view to ensure updated data information
 spreadSheetView1.Update()
-#
+
+
+
 ## create a new 'Threshold'
 threshold1 = Threshold(Input=slice1)
 #
@@ -82,7 +85,8 @@ calculator1.Function = 'nx*iHat+ny*jHat+nz*kHat'
 
 ## update the view to ensure updated data information
 spreadSheetView1.Update()
-#
+
+
 ## create a new 'Glyph'
 glyph1 = Glyph(Input=calculator1,
     GlyphType='Cylinder')
@@ -180,6 +184,7 @@ sPWF.ScalarRangeInitialized = 1
 # Rescale transfer function
 sPWF.RescaleTransferFunction(0.2, 0.6)
 layout1.SetSplitFraction(0, 0.50)
+
 
 
 # get color transfer function/color map for 'S'

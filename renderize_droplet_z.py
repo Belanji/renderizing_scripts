@@ -1,5 +1,3 @@
-#!/dados/Renato/ParaView/5.6.0/bin/pvbatch
-
 # trace generated using paraview version 5.6.0
 #
 # To ensure correct image size when batch processing, please search 
@@ -55,7 +53,7 @@ slice1.SliceType = 'Plane'
 slice1.SliceOffsetValues = [0.0]
 
 ## init the 'Plane' selected for 'SliceType'
-slice1.SliceType.Origin =[dropletSize/2 , dropletSize/(dimensionReduction*2), dropletSize/(dimensionReduction*2)]
+slice1.SliceType.Origin =[dropletSize/(dimensionReduction*2), dropletSize/(dimensionReduction*2), dropletSize/2 ]
 slice1.SliceType.Normal = [0.0, 0.0, 1.0]
 
 

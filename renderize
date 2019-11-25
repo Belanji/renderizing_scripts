@@ -24,16 +24,16 @@ do
 
     
     ginzo2000 0 $((Midle-2)) $((Midle+2)) $Stride ./director_field_${ii}.csv >./x_plane_${ii}.csv  
-    renderize_droplet_x.py ${Size} ${Stride} x_plane_${ii}.csv
+    ${ParaviewDirr}/pvbatch ${RenderizingScriptsDirr}/renderize_droplet_x.py ${Size} ${Stride} x_plane_${ii}.csv
     rm x_plane_${ii}.csv
     
     
     ginzo2000 1 $((Midle-2)) $((Midle+2))  $Stride ./director_field_${ii}.csv >./y_plane_${ii}.csv  
-    renderize_droplet_y.py ${Size} ${Stride} y_plane_${ii}.csv
+    ${ParaviewDirr}/pvbatch ${RenderizingScriptsDirr}/renderize_droplet_y.py ${Size} ${Stride} y_plane_${ii}.csv
     rm y_plane_${ii}.csv
      
      ginzo2000 2 $((Midle-2)) $((Midle+2))  $Stride ./director_field_${ii}.csv >./z_plane_${ii}.csv  
-    renderize_droplet_z.py ${Size} ${Stride} z_plane_${ii}.csv
+    ${ParaviewDirr}/pvbatch ${RenderizingScriptsDirr}/renderize_droplet_z.py ${Size} ${Stride} z_plane_${ii}.csv
     rm z_plane_${ii}.csv
     
 done
